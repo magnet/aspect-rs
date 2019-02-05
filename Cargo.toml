@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "aspect-core",
+  "aspect-weave",
+  ]

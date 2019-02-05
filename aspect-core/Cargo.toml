@@ -1,0 +1,7 @@
+[package]
+name = "aspect"
+version = "0.1.0"
+authors = ["Simon Chemouil <simon.chemouil@lambdacube.fr>"]
+edition = "2018"
+
+[dependencies]
