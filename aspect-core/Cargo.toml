@@ -2,6 +2,14 @@
 name = "aspect"
 version = "0.1.0"
 authors = ["Simon Chemouil <simon.chemouil@lambdacube.fr>"]
+license = "Apache-2.0 OR MIT"
+readme = "../README.md"
+keywords = ["aspect", "macro"]
+repository = "https://github.com/magnet/aspect-rs"
+description = """
+An Aspect Toolkit for Rust
+"""
+categories = ["rust-patterns", "data-structures", "config", "algorithms"]
 edition = "2018"
 
 [dependencies]

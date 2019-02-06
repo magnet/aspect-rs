@@ -8,6 +8,9 @@
 //!
 //! This crate provides method weaving support through methods re-usable in procedural macros.
 
+#![deny(missing_docs)]
+#![deny(warnings)]
+
 // The `quote!` macro requires deep recursion.
 #![recursion_limit = "512"]
 
@@ -19,13 +22,21 @@ use syn::parse::Parse;
 use syn::Result;
 use synattra::ParseAttributes;
 
+/// A trait to "Weave" an `impl` block, that is update each annotated method with your custom logic
+/// 
+/// This trait extends Synattra's `ParseAttributes` that parses custom, non-macro attributes that are attached to the `impl` block or methods.
 pub trait Weave: ParseAttributes {
+    /// The parameters of the macro attribute triggering the weaving, i.e the attributes passed by the compiler to your custom procedural macro.
     type MacroAttributes: Parse;
 
+    /// Parse the main macro attributes.
+    /// 
+    /// The default implementation should work out-of-the-box.
     fn parse_macro_attributes(attrs: TokenStream) -> syn::Result<Self::MacroAttributes> {
         Ok(syn::parse(attrs)?)
     }
 
+    /// A callback that lets you alter the blocks of intercepted methods.
     fn update_fn_block(
         fn_def: &syn::ImplItemMethod,
         main_attr: &Self::MacroAttributes,
@@ -34,12 +45,19 @@ pub trait Weave: ParseAttributes {
 }
 
 use indexmap::IndexMap;
+/// An `impl` block after it's been woven.
 pub struct WovenImplBlock<M, F> {
+    /// The woven `impl` block, in which individual function blocks have been updated and intercepted attributes removed.
     pub woven_block: syn::ItemImpl,
+    /// The macro attributes
     pub main_attributes: M,
+    /// The woven functions, along with their intercepted attributes
     pub woven_fns: IndexMap<syn::Ident, Vec<Rc<F>>>,
 }
 
+/// Weave an `impl` block
+/// 
+/// This method is meant to be called from a custom procedural macro.
 pub fn weave_impl_block<W: Weave>(
     attrs: TokenStream,
     item: TokenStream,

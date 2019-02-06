@@ -1,8 +1,14 @@
+//! An experimental module providing a way to update method parameters in aspects.
+
+/// The trait `Update` allows a value to be updated while guaranteeing the return type is the same.
 pub trait Update<T> {
+    /// Update a value
     fn update(_: T) -> T;
 }
 
+/// The trait `UpdateRef` allows a value to be updated by using its reference.
 pub trait UpdateRef<T> {
+    /// Update a value by reference
     fn update_ref(_: &mut T);
 }
 
