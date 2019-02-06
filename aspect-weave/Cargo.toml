@@ -17,4 +17,4 @@ syn = {version= "0.15.26", features = ["full"] }
 quote = "0.6.11"
 proc-macro2 = "0.4.26"
 indexmap = "1.0.2"
-synattra = { path ="../../synattra", version = "0.1.0"}
+synattra = "0.1.0"
