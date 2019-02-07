@@ -13,4 +13,4 @@ categories = ["rust-patterns", "data-structures", "config", "algorithms"]
 edition = "2018"
 
 [dependencies]
-"aspect-weave" = "0.1.1"
+aspect-weave = "0.1.1"
