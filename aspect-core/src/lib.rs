@@ -10,6 +10,7 @@
 #![deny(warnings)]
 
 pub mod update;
+pub use aspect_weave::Weave;
 
 /// The `Enter` trait is called when entering in an aspect, before the wrapped expression is called.
 pub trait Enter {
@@ -56,3 +57,4 @@ pub trait OnResultMut<R>: Enter {
         Advice::Return
     }
 }
+
