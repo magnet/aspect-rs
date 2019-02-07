@@ -1,6 +1,6 @@
 [package]
 name = "aspect"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Simon Chemouil <simon.chemouil@lambdacube.fr>"]
 license = "Apache-2.0 OR MIT"
 readme = "../README.md"
@@ -13,4 +13,4 @@ categories = ["rust-patterns", "data-structures", "config", "algorithms"]
 edition = "2018"
 
 [dependencies]
-"aspect-weave" = "0.1.0"
+"aspect-weave" = "0.1.1"
