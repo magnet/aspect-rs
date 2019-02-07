@@ -1,4 +1,13 @@
 # aspect-rs
+[![Build Status](https://travis-ci.org/magnet/aspect-rs.svg?branch=master)](https://travis-ci.org/magnet/aspect-rs)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](
+https://github.com/magnet/aspect-rs)
+[![Cargo](https://img.shields.io/crates/v/aspect.svg)](
+https://crates.io/crates/aspect)
+[![Documentation](https://docs.rs/aspect/badge.svg)](
+https://docs.rs/aspect)
+[![Rust 1.31+](https://img.shields.io/badge/rust-1.31+-lightgray.svg)](
+https://www.rust-lang.org)
 ## An Aspect Toolkit for Rust
 
 Aspect-RS is a project aiming to provide common ground for the main Aspect-Oriented use cases in Rust. By leveraging the trait system, declarative and procedural macros, Aspect-RS provides blocks that let you wrap methods with your custom logic.
