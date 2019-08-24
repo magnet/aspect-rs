@@ -1,16 +1,15 @@
 //! # An Aspect Toolkit for Rust
-//! 
+//!
 //! Aspect-RS is a project aiming to provide common ground for the main Aspect-Oriented use cases in Rust. By leveraging the trait system, declarative and procedural macros, Aspect-RS provides blocks that let you wrap methods with your custom logic.
-//! 
+//!
 //! The project has been extracted from the [Metered project](https://github.com/magnet/metered-rs), which uses the technique to build metrics that can work on expressions or methods, whether they're `async` or not. The technique seemed general enough to be in its own crate and see if it is of any interest to other parties.
-//! 
+//!
 //! Aspect-RS provides "pointcut" traits when entering or exiting an expression (`OnEnter` and `OnResult`), experimental `Update` and `UpdateRef` traits that can use parameter shadowing to intercept and update method parameters, and weaving constructs useful when building procedural macros. Please look at the [Metered project](https://github.com/magnet/metered-rs) to see Aspect-RS in action.
 //!
 //! This crate provides method weaving support through methods re-usable in procedural macros.
 
 #![deny(missing_docs)]
 #![deny(warnings)]
-
 // The `quote!` macro requires deep recursion.
 #![recursion_limit = "512"]
 
@@ -23,14 +22,14 @@ use syn::Result;
 use synattra::ParseAttributes;
 
 /// A trait to "Weave" an `impl` block, that is update each annotated method with your custom logic
-/// 
+///
 /// This trait extends Synattra's `ParseAttributes` that parses custom, non-macro attributes that are attached to the `impl` block or methods.
 pub trait Weave: ParseAttributes {
     /// The parameters of the macro attribute triggering the weaving, i.e the attributes passed by the compiler to your custom procedural macro.
     type MacroAttributes: Parse;
 
     /// Parse the main macro attributes.
-    /// 
+    ///
     /// The default implementation should work out-of-the-box.
     fn parse_macro_attributes(attrs: TokenStream) -> syn::Result<Self::MacroAttributes> {
         Ok(syn::parse(attrs)?)
@@ -56,7 +55,7 @@ pub struct WovenImplBlock<M, F> {
 }
 
 /// Weave an `impl` block
-/// 
+///
 /// This method is meant to be called from a custom procedural macro.
 pub fn weave_impl_block<W: Weave>(
     attrs: TokenStream,
@@ -111,7 +110,7 @@ fn process_custom_attributes<W: ParseAttributes, R, F: Fn(W::Type) -> R>(
 
     let mut fn_attributes: Vec<R> = Vec::new();
     for attr in ours.into_iter() {
-        let p = W::parse_attributes(attr.tts)?;
+        let p = W::parse_attributes(attr.tokens)?;
         fn_attributes.push(f(p));
     }
 

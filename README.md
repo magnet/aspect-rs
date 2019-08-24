@@ -16,10 +16,15 @@ The project has been extracted from the [Metered project](https://github.com/mag
 
 Aspect-RS provides "pointcut" traits when entering or exiting an expression (`OnEnter` and `OnResult`), experimental `Update` and `UpdateRef` traits that can use parameter shadowing to intercept and update method parameters, and weaving constructs useful when building procedural macros. Please look at the [Metered project](https://github.com/magnet/metered-rs) to see Aspect-RS in action.
 
+## Changelog
+
+* 0.2.0:
+  * Updated dependencies to use `syn`, `proc-macro2` and `quote` 1.0
+
 
 ## Required Rust version
 
-Aspect-RS works on `Rust` stable.
+Aspect-RS runs on `Rust` stable.
 
 ## License
 
