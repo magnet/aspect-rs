@@ -60,7 +60,24 @@ pub trait OnResultMut<R>: Enter {
     /// Called when an expression has returned.
     ///
     /// This function is passed both the enter return value, and the expression return value.
-    fn on_result(&self, _enter: <Self as Enter>::E, _result: &mut R) -> Advice {
+    fn on_result(&self, enter: <Self as Enter>::E, _result: &mut R) -> Advice {
+        self.leave_scope(enter)
+    }
+
+    /// Called when an expression has exited, but the return value isn't known.
+    /// This can happen because of a panic, or if control flow bypasses a macro.
+    /// This is also called by the default implementation of `on_result`.
+    fn leave_scope(&self, _enter: <Self as Enter>::E) -> Advice {
         Advice::Return
+    }
+}
+
+impl<R, A: OnResult<R>> OnResultMut<R> for A {
+    fn on_result(&self, enter: <Self as Enter>::E, result: &mut R) -> Advice {
+        <Self as OnResult<R>>::on_result(self, enter, result)
+    }
+
+    fn leave_scope(&self, enter: <Self as Enter>::E) -> Advice {
+        <Self as OnResult<R>>::leave_scope(self, enter)
     }
 }
