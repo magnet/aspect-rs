@@ -19,7 +19,6 @@ impl<T, U: UpdateRef<T>> Update<T> for U {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::{Update, UpdateRef};
