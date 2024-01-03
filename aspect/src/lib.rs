@@ -81,3 +81,34 @@ impl<R, A: OnResult<R>> OnResultMut<R> for A {
         <Self as OnResult<R>>::leave_scope(self, enter)
     }
 }
+
+/// The `OnResultOwned` trait is implemented on Aspects to get notified
+/// when an expression has returned, and provide the possibility to
+/// replace the result.
+pub trait OnResultOwned<R>: Enter {
+    /// Called when an expression has returned.
+    ///
+    /// This function is passed both the enter return value, and the expression return value.
+    fn on_result(&self, enter: <Self as Enter>::E, result: R) -> (Advice, R) {
+        let advice = self.leave_scope(enter);
+        (advice, result)
+    }
+
+    /// Called when an expression has exited, but the return value isn't known.
+    /// This can happen because of a panic, or if control flow bypasses a macro.
+    /// This is also called by the default implementation of `on_result`.
+    fn leave_scope(&self, _enter: <Self as Enter>::E) -> Advice {
+        Advice::Return
+    }
+}
+
+impl<R, A: OnResultMut<R>> OnResultOwned<R> for A {
+    fn on_result(&self, enter: <Self as Enter>::E, mut result: R) -> (Advice, R) {
+        let advice = <Self as OnResultMut<R>>::on_result(self, enter, &mut result);
+        (advice, result)
+    }
+
+    fn leave_scope(&self, enter: <Self as Enter>::E) -> Advice {
+        <Self as OnResultMut<R>>::leave_scope(self, enter)
+    }
+}
