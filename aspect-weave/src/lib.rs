@@ -32,7 +32,7 @@ pub trait Weave: ParseAttributes {
     ///
     /// The default implementation should work out-of-the-box.
     fn parse_macro_attributes(attrs: TokenStream) -> syn::Result<Self::MacroAttributes> {
-        Ok(syn::parse(attrs)?)
+        syn::parse(attrs)
     }
 
     /// A callback that lets you alter the blocks of intercepted methods.
@@ -64,17 +64,17 @@ pub fn weave_impl_block<W: Weave>(
     let main_attributes = W::parse_macro_attributes(attrs)?;
 
     let mut parsed_input: syn::ItemImpl = syn::parse(item)?;
-    let mut attrs = &mut parsed_input.attrs;
+    let attrs = &mut parsed_input.attrs;
     let main_extra_attributes: Vec<Rc<<W as ParseAttributes>::Type>> =
-        process_custom_attributes::<W, _, _>(&mut attrs, Rc::new)?;
+        process_custom_attributes::<W, _, _>(attrs, Rc::new)?;
 
     let mut woven = indexmap::map::IndexMap::new();
 
     for item in parsed_input.items.iter_mut() {
         if let syn::ImplItem::Method(item_fn) = item {
-            let mut attrs = &mut item_fn.attrs;
+            let attrs = &mut item_fn.attrs;
 
-            let method_attrs = process_custom_attributes::<W, _, _>(&mut attrs, Rc::new)?;
+            let method_attrs = process_custom_attributes::<W, _, _>(attrs, Rc::new)?;
 
             if method_attrs.is_empty() {
                 continue;
@@ -92,7 +92,7 @@ pub fn weave_impl_block<W: Weave>(
 
     Ok(WovenImplBlock {
         woven_block: parsed_input,
-        main_attributes: main_attributes,
+        main_attributes,
         woven_fns: woven,
     })
 }
