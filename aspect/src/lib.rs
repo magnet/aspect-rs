@@ -54,14 +54,16 @@ pub trait OnResult<R>: Enter {
     }
 }
 
-/// The `OnResult` trait is implemented on Aspects to get notified when an expression has returned, and provide
-/// the possibility to alter the result.
+/// The `OnResultMut` trait is implemented on Aspects to get notified
+/// when an expression has returned, and provide the possibility to
+/// replace the result.
 pub trait OnResultMut<R>: Enter {
     /// Called when an expression has returned.
     ///
     /// This function is passed both the enter return value, and the expression return value.
-    fn on_result(&self, enter: <Self as Enter>::E, _result: &mut R) -> Advice {
-        self.leave_scope(enter)
+    fn on_result(&self, enter: <Self as Enter>::E, result: R) -> (Advice, R) {
+        let advice = self.leave_scope(enter);
+        (advice, result)
     }
 
     /// Called when an expression has exited, but the return value isn't known.
@@ -73,8 +75,9 @@ pub trait OnResultMut<R>: Enter {
 }
 
 impl<R, A: OnResult<R>> OnResultMut<R> for A {
-    fn on_result(&self, enter: <Self as Enter>::E, result: &mut R) -> Advice {
-        <Self as OnResult<R>>::on_result(self, enter, result)
+    fn on_result(&self, enter: <Self as Enter>::E, result: R) -> (Advice, R) {
+        let advice = <Self as OnResult<R>>::on_result(self, enter, &result);
+        (advice, result)
     }
 
     fn leave_scope(&self, enter: <Self as Enter>::E) -> Advice {
