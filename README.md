@@ -18,6 +18,8 @@ Aspect-RS provides "pointcut" traits when entering or exiting an expression (`On
 
 ## Changelog
 
+* 0.3.0:
+  * Updated dependencies to use `syn` to 2.0, `indexmap` to 2.1 and `synattra` to 0.3.0
 * 0.2.0:
   * Updated dependencies to use `syn`, `proc-macro2` and `quote` 1.0
 

@@ -1,6 +1,6 @@
 [package]
 name = "aspect-weave"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["Simon Chemouil <simon.chemouil@lambdacube.fr>"]
 license = "Apache-2.0 OR MIT"
 readme = "../README.md"
@@ -13,8 +13,8 @@ categories = ["rust-patterns", "data-structures", "config", "algorithms"]
 edition = "2018"
 
 [dependencies]
-syn = {version= "1.0", features = ["full"] }
+syn = {version= "2.0", features = ["full"] }
 quote = "1.0"
 proc-macro2 = "1.0"
-indexmap = "1.6"
-synattra = "0.2"
+indexmap = "2.1"
+synattra = {  path = "../../synattra", version = "0.3.0" }

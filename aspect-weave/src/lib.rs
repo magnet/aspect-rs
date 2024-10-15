@@ -16,9 +16,11 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
+use proc_macro2::Delimiter;
+use quote::ToTokens;
 use std::rc::Rc;
 use syn::parse::Parse;
-use syn::Result;
+use syn::{MacroDelimiter, Result};
 use synattra::ParseAttributes;
 
 /// A trait to "Weave" an `impl` block, that is update each annotated method with your custom logic
@@ -37,7 +39,7 @@ pub trait Weave: ParseAttributes {
 
     /// A callback that lets you alter the blocks of intercepted methods.
     fn update_fn_block(
-        fn_def: &syn::ImplItemMethod,
+        fn_def: &syn::ImplItemFn,
         main_attr: &Self::MacroAttributes,
         fn_attr: &[Rc<<Self as ParseAttributes>::Type>],
     ) -> Result<syn::Block>;
@@ -71,7 +73,7 @@ pub fn weave_impl_block<W: Weave>(
     let mut woven = indexmap::map::IndexMap::new();
 
     for item in parsed_input.items.iter_mut() {
-        if let syn::ImplItem::Method(item_fn) = item {
+        if let syn::ImplItem::Fn(item_fn) = item {
             let mut attrs = &mut item_fn.attrs;
 
             let method_attrs = process_custom_attributes::<W, _, _>(&mut attrs, Rc::new)?;
@@ -104,15 +106,41 @@ fn process_custom_attributes<W: ParseAttributes, R, F: Fn(W::Type) -> R>(
     let (ours, theirs): (Vec<syn::Attribute>, Vec<syn::Attribute>) = attrs
         .clone()
         .into_iter()
-        .partition(|attr| attr.path.is_ident(W::fn_attr_name()));
+        .partition(|attr| attr.path().is_ident(W::fn_attr_name()));
 
     *attrs = theirs;
 
     let mut fn_attributes: Vec<R> = Vec::new();
     for attr in ours.into_iter() {
-        let p = W::parse_attributes(attr.tokens)?;
+        let mut ts: proc_macro2::TokenStream = proc_macro2::TokenStream::new();
+
+        match attr.meta {
+            syn::Meta::List(l) => surround(&l.delimiter, &mut ts, l.tokens.clone()),
+            syn::Meta::NameValue(nv) => {
+                nv.eq_token.to_tokens(&mut ts);
+                nv.value.to_tokens(&mut ts)
+            }
+            _ => {}
+        };
+
+        let p = W::parse_attributes(ts)?;
         fn_attributes.push(f(p));
     }
 
     Ok(fn_attributes)
+}
+
+fn surround(
+    delim: &MacroDelimiter,
+    tokens: &mut proc_macro2::TokenStream,
+    inner: proc_macro2::TokenStream,
+) {
+    let (delim, span) = match delim {
+        MacroDelimiter::Paren(paren) => (Delimiter::Parenthesis, paren.span),
+        MacroDelimiter::Brace(brace) => (Delimiter::Brace, brace.span),
+        MacroDelimiter::Bracket(bracket) => (Delimiter::Bracket, bracket.span),
+    };
+    let mut g = proc_macro2::Group::new(delim, inner);
+    g.set_span(span.join());
+    tokens.extend(std::iter::once(g.to_token_stream()));
 }
